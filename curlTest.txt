@@ -1,0 +1,13 @@
+注册
+curl -X POST http://localhost:3000/users/register -H "Content-Type: application/json" -d "{\"username\":\"test1\",\"password\":\"123456\"}"
+
+登录
+curl -X POST http://localhost:3000/users/login -H "Content-Type: application/json" -d "{\"username\":\"test\",\"password\":\"123456\"}"
+
+{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NzkyOTQ5MSwiZXhwIjoxNzQ3OTMzMDkxfQ.xsL7AUdh45tsoQfqn_iDym72POYZHt7S2LxMt9ZqLvY"}
+
+获取用户信息
+curl http://localhost:3000/users/me -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NzkyOTQ5MSwiZXhwIjoxNzQ3OTMzMDkxfQ.xsL7AUdh45tsoQfqn_iDym72POYZHt7S2LxMt9ZqLvY"
+
+文件上传
+curl -X POST http://localhost:3000/upload -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NzkyOTQ5MSwiZXhwIjoxNzQ3OTMzMDkxfQ.xsL7AUdh45tsoQfqn_iDym72POYZHt7S2LxMt9ZqLvY" -F "file=@C:/Users/Administrator/Pictures/test.png"
