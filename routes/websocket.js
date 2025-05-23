@@ -14,7 +14,7 @@ function setupWebSocket(server) {
             });
         } else {
             console.error("WebSocket鉴权失败");
-            socket.write('WebSocket鉴权失败');
+            socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
             socket.destroy();
         }
     } catch (err) {
