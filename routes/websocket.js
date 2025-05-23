@@ -1,40 +1,50 @@
-const { WebSocket } = require('ws');
-const { wsAuth } = require('../middleware/auth');
+const { WebSocket } = require("ws");
+const { wsAuth } = require("../middleware/auth");
 
 function setupWebSocket(server) {
-    const wss = new WebSocket.Server({ server });
+    wss = new WebSocket.Server({ noServer: true }); // 修改此处
 
-    // // 鉴权
-    // server.on('upgrade', async (req, socket, head) => {
-    //     const authPassed = await wsAuth(req, socket) // 传入socket对象
-    //     if (authPassed) {
-    //         wss.handleUpgrade(req, socket, head, (ws) => {
-    //             wss.emit('connection', ws, req);
-    //         });
-    //     }
-    // })
-
-    wss.on('connection', (ws) => {
-        console.log('新的WebSocket连接建立');
-
-        /// 收到消息
-        ws.on('message', (message) => {
-            console.log('收到消息:', message.toString());
-
-            wss.clients.forEach ((client) => {
-                if (client !== ws && client.readyState === WebSocket.OPEN) {
-                    client.send(message.toString());
-                }
+  // 鉴权
+  server.on("upgrade", async (req, socket, head) => {
+    try {
+        const authPassed = await wsAuth(req, socket);
+        if (authPassed) {
+            wss.handleUpgrade(req, socket, head, (ws) => {
+                wss.emit("connection", ws, req);
             });
-        });
+        } else {
+            console.error("WebSocket鉴权失败");
+            socket.write('WebSocket鉴权失败');
+            socket.destroy();
+        }
+    } catch (err) {
+        console.error("WebSocket鉴权失败", err);
+        socket.write('HTTP/1.1 500 Internal Server Error\r\n\r\n');
+        socket.destroy();
+    }
+  });
 
-        /// 连接断开
-        ws.on('close', () => {
-            console.log('连接关闭');
-        });
+  wss.on("connection", (ws) => {
+    console.log("新的WebSocket连接建立");
+
+    /// 收到消息
+    ws.on("message", (message) => {
+      console.log("收到消息:", message.toString());
+
+      wss.clients.forEach((client) => {
+        if (client !== ws && client.readyState === WebSocket.OPEN) {
+          client.send(message.toString());
+        }
+      });
     });
 
-    return wss;
+    /// 连接断开
+    ws.on("close", () => {
+      console.log("连接关闭");
+    });
+  });
+
+  return wss;
 }
 
 module.exports = setupWebSocket;

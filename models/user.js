@@ -13,6 +13,17 @@ const User = sequelize.define('User', {
         allowNull: false
     },
     avatar: DataTypes.STRING
+}, {
+    defaultScope: {
+        // 默认查询时排除密码字段
+        attributes: { exclude: ['password'] }
+    },
+    scopes: {
+        // 显示密码
+        withPassword: {
+            attributes: {}
+        }
+    }
 });
 
 /// 密码加密钩子
