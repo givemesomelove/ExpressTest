@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const router = express.Router();
-const authMiddleware = require('../middleware/auth');
+const { httpAuth } = require('../middleware/auth');
 
 // 配置 Multer
 const upload = multer({
@@ -17,7 +17,7 @@ const upload = multer({
 });
 
 // 文件上传路由
-router.post('/', authMiddleware, upload.single('file'), (req, res) => {
+router.post('/', httpAuth, upload.single('file'), (req, res) => {
     console.log('文件上传请求收到');
     res.json({
         filename: req.file.originalname,

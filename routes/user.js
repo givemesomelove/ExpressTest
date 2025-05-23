@@ -3,7 +3,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
-const authMiddleware = require('../middleware/auth');
+const { httpAuth } = require('../middleware/auth');
 
 /// 用户注册
 router.post('/register', async (req, res) => {
@@ -36,7 +36,7 @@ router.post('/login', async (req, res) => {
 });
 
 /// 获取用户信息(需认证)
-router.get('/me', authMiddleware, async (req, res) => {
+router.get('/me', httpAuth, async (req, res) => {
     try {
         const user = await User.findByPk(req.user.id);
         res.json(user);

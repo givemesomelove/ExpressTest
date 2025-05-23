@@ -6,8 +6,10 @@ const cors = require('cors');
 const compression = require('compression');
 const multer = require('multer');
 const sequelize = require('./config/database');
+const setupWebSocket = require('./routes/websocket');
+const http = require('http');
+const { WebSocket } = require('ws');
 
-const app = express();
 const port = process.env.PORT || 3000;
 
 /// 测试数据库连接
@@ -18,19 +20,25 @@ sequelize.authenticate()
 /// 自动创建表
 sequelize.sync({ force: false });
 
-/// 中间件
-app.use(cors());
-app.use(morgan('dev'));
+const app = express();
+
+/// 压缩
 app.use(compression());
+/// 跨域
+app.use(cors());
+/// 日志
+app.use(morgan('dev'));
+/// 静态文件路径
 app.use(express.static('public'));
-
-app.use('/upload', require('./routes/upload'));
-
+/// 解析 JSON
 app.use(express.json());
 
 // 路由
 app.use('/users', require('./routes/user'));
-
+app.use('/upload', require('./routes/upload'));
+/// websocket
+const server = http.createServer(app);
+setupWebSocket(server);
 
 // 全局错误处理
 app.use((err, req, res, next) => {
@@ -38,6 +46,6 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: '服务器错误' });
 });
 
-app.listen(port, () => {
+server.listen(port, '0.0.0.0', () => {
     console.log(`服务器正在运行在 http://localhost:${port}`);
 })
