@@ -28,7 +28,7 @@ router.post('/login', async (req, res) => {
         const valid = await bcrypt.compare(req.body.password, user.password);
         if (!valid) throw new Error('密码错误');
 
-        const token = jwt.sign({userId: user.id}, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({userId: user.id}, process.env.JWT_SECRET, { expiresIn: '24h' });
         res.json({ token });
     } catch (err) {
         res.status(401).json({ error: err.message });
